@@ -57,7 +57,7 @@ export const getMyOrdersController = async (req, res) => {
   }
 };
 
-// controller for the admin dashboard that shows all the orders by every customer /////////////
+//// controller for the admin dashboard that shows all the orders by every customer
 export const allOrdersController = async (req, res) => {
   try {
     const allOrders = await orderModel.find();
