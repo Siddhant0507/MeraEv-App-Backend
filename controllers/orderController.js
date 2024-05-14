@@ -17,7 +17,7 @@ export const orderController = async (req, res) => {
       dateOfService,
       cost,
     });
-    res.status(201).send({
+    return res.status(201).send({
       success: true,
       message: "Order Placed SucessFully",
     });
@@ -37,19 +37,19 @@ export const getMyOrdersController = async (req, res) => {
     const order = await orderModel.find({ user: req.user._id });
     //validation
     if (!order) {
-      res.status(404).send({
+      return res.status(404).send({
         success: false,
         message: "No order Placed By user",
       });
     }
-    res.status(200).send({
+    return res.status(200).send({
       message: "Here is your order data",
       success: true,
       totalOrder: order.length,
       order,
     });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
       message: "Error at my order api.",
       error,
@@ -68,14 +68,14 @@ export const allOrdersController = async (req, res) => {
       });
     }
 
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       message: "here is the list of all the orders",
       totalOrder: allOrders.length,
       allOrders,
     });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
       message: "Error at my order api.",
       error,

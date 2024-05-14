@@ -4,16 +4,17 @@ export const registerController = async (req, res) => {
   try {
     const { name, email, phoneNumber } = req.body;
     if (!name || !email || !phoneNumber) {
-      res.status(500).send({
+      return res.status(502).send({
         message: "required fields are not porvided",
         success: false,
-      });
-    }
+      }
 
+      );
+    }
     // check existing user
     const existingUser = await userModel.findOne({ phoneNumber });
     if (existingUser) {
-      return res.status(500).send({
+      return res.status(501).send({
         message: "User Already exist.Please Login",
         success: false,
       });
@@ -21,19 +22,19 @@ export const registerController = async (req, res) => {
 
     //on success of registration
     const user = await userModel.create({ name, email, phoneNumber });
-    res.status(201).send({
+    return res.status(201).send({
       message: "user Created Successfully",
       success: true,
       user,
     });
+
   } catch (error) {
     //on error of registration
-    res.status(500).send({
+    return res.status(500).send({
       message: "error at user registration in controller api",
       success: false,
       error,
     });
-    console.log("error at user Registeration controller api ", error);
   }
 };
 
@@ -42,9 +43,11 @@ export const registerController = async (req, res) => {
 //
 export const loginController = async (req, res) => {
   try {
-    const { phoneNumber } = req.body;
+    const { phoneNumber } = req.body
+
+
     if (!phoneNumber) {
-      res.status(500).send({
+      return res.status(401).send({
         message: "Please Provide the Phone Number",
         success: false,
       });
@@ -58,10 +61,9 @@ export const loginController = async (req, res) => {
         user,
       });
     }
-
     // jwt token
     const token = user.generateToken();
-    res
+    return res
       .status(200)
       .cookie("token", token, {
         expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
@@ -76,12 +78,12 @@ export const loginController = async (req, res) => {
         user,
       });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       message: "error at user sign in controller part",
       success: false,
       error,
     });
-    console.log("error at user signin controller ", error);
+    console.log("error at user signin controller ", error.message);
   }
 };
 
@@ -90,13 +92,13 @@ export const loginController = async (req, res) => {
 export const getUserProfileController = async (req, res) => {
   try {
     const user = await userModel.findById(req.user._id);
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       message: "User Profile Fetch Successfully",
       user,
     });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       message: "error at userProfile controller part",
       success: false,
       error,
@@ -109,7 +111,7 @@ export const getUserProfileController = async (req, res) => {
 
 export const logoutController = async (req, res) => {
   try {
-    res
+    return res
       .status(200)
       .cookie("token", "", {
         expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
@@ -122,7 +124,7 @@ export const logoutController = async (req, res) => {
         message: "User Logout successfully",
       });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       message: "error at Logout controller part",
       success: false,
       error,
@@ -142,12 +144,12 @@ export const updateProfileController = async (req, res) => {
     if (email) user.email = email;
     if (phoneNumber) user.phoneNumber = phoneNumber;
     await user.save();
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       message: "User Update successfully",
     });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       message: "error at UpdateProfile controller part",
       success: false,
       error,
